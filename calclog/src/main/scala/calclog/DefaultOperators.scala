@@ -1,0 +1,36 @@
+package calclog
+
+trait Plus[A] extends ((A, A) => Evaluated[A])
+
+object Plus {
+  def safe[A](f: (A, A) => A): Plus[A] = (x: A, y: A) => Evaluated(f(x, y))
+  def apply[A](implicit plus: Plus[A]): Plus[A] = plus
+}
+
+trait Minus[A] extends ((A, A) => Evaluated[A])
+
+object Minus {
+  def safe[A](f: (A, A) => A): Minus[A] = (x: A, y: A) => Evaluated(f(x, y))
+  def apply[A](implicit minus: Minus[A]): Minus[A] = minus
+}
+
+trait Times[A, B, C] extends ((A, B) => Evaluated[C])
+
+object Times {
+  def safe[A, B, C](f: (A, B) => C): Times[A, B, C] = (x: A, y: B) => Evaluated(f(x, y))
+  def apply[A, B, C](implicit times: Times[A, B, C]): Times[A, B, C] = times
+}
+
+trait Divide[A, B, C] extends ((A, B) => Evaluated[C])
+
+object Divide {
+  def safe[A, B, C](f: (A, B) => C): Divide[A, B, C] = (x: A, y: B) => Evaluated(f(x, y))
+  def apply[A, B, C](implicit divide: Divide[A, B, C]): Divide[A, B, C] = divide
+}
+
+trait SquareRoot[A] extends (A => Evaluated[A])
+
+object SquareRoot {
+  def safe[A](f: A => A): SquareRoot[A] = (x: A) => Evaluated(f(x))
+  def apply[A](implicit sqrt: SquareRoot[A]): SquareRoot[A] = sqrt
+}
