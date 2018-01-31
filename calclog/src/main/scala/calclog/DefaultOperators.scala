@@ -28,7 +28,9 @@ object Divide {
   def apply[A, B, C](implicit divide: Divide[A, B, C]): Divide[A, B, C] = divide
 }
 
-trait SquareRoot[A] extends (A => Evaluated[A])
+trait SquareRoot[A] extends (A => Evaluated[A]) { self =>
+  def filterOrElse(f: A => Boolean, error: String): SquareRoot[A] = a => self(a).filterOrElse(f, error)
+}
 
 object SquareRoot {
   def safe[A](f: A => A): SquareRoot[A] = (x: A) => Evaluated(f(x))

@@ -9,8 +9,6 @@ object Format {
 
   def format[A: Format](a: A): String = Format[A].format(a)
 
-  implicit val formatBigDecimal: Format[BigDecimal] = _.toString()
-
 }
 
 trait FormatSyntax {

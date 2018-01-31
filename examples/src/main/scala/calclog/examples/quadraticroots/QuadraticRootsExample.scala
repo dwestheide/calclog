@@ -1,12 +1,12 @@
 package calclog.examples.quadraticroots
 
-import calclog.{Calculation, Format}
+import calclog.{Calculation, Format, ToStringFormat}
 
 object QuadraticRootsExample extends App {
-
+  
   import calclog.FormatSyntax._
   import calclog.Implicits._
-  implicit val doubleFormat: Format[Double] = _.toString
+  implicit val doubleFormat: Format[Double] = ToStringFormat.toStringFormat
 
   final case class Parameters(a: Double, b: Double, c: Double)
 
@@ -25,8 +25,6 @@ object QuadraticRootsExample extends App {
     val four = 4d ~ "4"
     val two = 2d ~ "2"
     val minusOne = -1d ~ "-1"
-
-    println((four * four + two).run.description.format)
 
     val bSquared = b * b <~ "b^2"
     val fourac = four * a * c <~ "4ac"

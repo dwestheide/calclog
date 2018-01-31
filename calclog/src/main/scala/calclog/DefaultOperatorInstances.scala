@@ -17,5 +17,7 @@ trait DefaultOperatorInstances {
   implicit def fractionalDivision[A: Fractional]: Divide[A, A, A] =
     Divide.safe(implicitly[Fractional[A]].div(_, _))
 
-  implicit val doubleSqareRoot: SquareRoot[Double] = SquareRoot.safe(scala.math.sqrt)
+  implicit val doubleSqareRoot: SquareRoot[Double] =
+    SquareRoot.safe(scala.math.sqrt).filterOrElse(!_.isNaN, "NaN")
+
 }
