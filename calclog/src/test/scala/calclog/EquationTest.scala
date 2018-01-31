@@ -7,7 +7,7 @@ import org.scalacheck.Prop.AnyOperators
 object EquationTest extends SimpleTestSuite with Checkers {
 
   import calclog.Implicits._
-  implicit val intFormat: Format[Int] = ToStringFormat.toStringFormat
+  import ToStringFormat.Implicits._
 
   test("Equation for simple infix op") {
     check2((x: Int, y: Int) => {

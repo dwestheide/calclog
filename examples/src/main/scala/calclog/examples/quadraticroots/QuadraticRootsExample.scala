@@ -1,12 +1,12 @@
 package calclog.examples.quadraticroots
 
-import calclog.{Calculation, Format, ToStringFormat}
+import calclog.Calculation
 
 object QuadraticRootsExample extends App {
   
   import calclog.FormatSyntax._
   import calclog.Implicits._
-  implicit val doubleFormat: Format[Double] = ToStringFormat.toStringFormat
+  import calclog.ToStringFormat.Implicits._
 
   final case class Parameters(a: Double, b: Double, c: Double)
 

@@ -2,11 +2,8 @@ package calclog
 
 trait DefaultOperatorInstances {
 
-  implicit val bigDecimalAddition: Plus[BigDecimal] = Plus.safe(_ + _)
-  implicit val integerAddition: Plus[Int] = Plus.safe(_ + _)
-  implicit val longAddition: Plus[Long] = Plus.safe(_ + _)
-  implicit val floatAddition: Plus[Float] = Plus.safe(_ + _)
-  implicit val doubleAddition: Plus[Double] = Plus.safe(_ + _)
+  implicit def numericAddition[A: Numeric]: Plus[A] =
+    Plus.safe(implicitly[Numeric[A]].plus(_, _))
 
   implicit def numericSubtraction[A: Numeric]: Minus[A] =
     Minus.safe(implicitly[Numeric[A]].minus(_, _))
