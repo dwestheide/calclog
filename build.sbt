@@ -18,7 +18,8 @@ lazy val calclog = project.in(file("calclog"))
 lazy val examples = project.in(file("examples"))
   .withId("examples")
   .settings(
-    name := "calclog-examples"
+    name := "calclog-examples",
+    coverageEnabled := false
   )
   .dependsOn(calclog)
 
