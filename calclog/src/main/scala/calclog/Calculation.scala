@@ -12,13 +12,13 @@ sealed trait CalculationDescription {
 final case class CalculationSummary(name: String, value: String)
 
 object CalculationSummary {
-  implicit val formatCalculationSummary: Format[CalculationSummary] =
+  implicit val formatCalculationSummary: CalculationFormatter[CalculationSummary] =
     summary => s"${summary.name} = ${summary.value}"
 }
 
 object CalculationDescription {
-  import FormatSyntax._
-  implicit val calculationDefaultFormat: Format[CalculationDescription] = calculation => {
+  implicit val calculationDefaultFormat: CalculationFormatter[CalculationDescription] = calculation => {
+    import CalculationFormatter.syntax._
     val indent = "  "
     def iter(acc: Seq[String],
              indentLevel: Int,
@@ -56,26 +56,26 @@ object CalculationDescription {
 }
 
 
-sealed abstract class Calculation[A: Format] extends CalculationDescription with Product with Serializable {
-  import FormatSyntax._
+sealed abstract class Calculation[A: ValueFormatter] extends CalculationDescription with Product with Serializable {
+  import ValueFormatterSyntax._
   def extractValue: Evaluated[A]
-  final def showValue: String = extractValue.fold(identity, _.format)
+  final def showValue: String = extractValue.fold(identity, _.formatValue)
   final def run: DescribedCalculation[A] = DescribedCalculation(extractValue, this)
 }
 
 object Calculation {
 
-  final case class Variable[A: Format](name: String, value: A) extends Calculation[A] {
+  final case class Variable[A: ValueFormatter](name: String, value: A) extends Calculation[A] {
     override val extractValue: Evaluated[A] = Evaluated.success(value)
     override val inputs: Seq[CalculationDescription] = Seq.empty
   }
 
-  final case class Expression[A: Format](op: Op[A]) extends Calculation[A] {
+  final case class Expression[A: ValueFormatter](op: Op[A]) extends Calculation[A] {
     override val extractValue: Evaluated[A] = op.evaluated
     override val inputs: Seq[CalculationDescription] = op.inputs
   }
 
-  final case class Binding[A: Format](name: String, expression: Expression[A]) extends Calculation[A] {
+  final case class Binding[A: ValueFormatter](name: String, expression: Expression[A]) extends Calculation[A] {
 
     override val extractValue: Evaluated[A] = expression
       .extractValue

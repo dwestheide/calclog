@@ -4,9 +4,9 @@ import calclog.Calculation
 
 object QuadraticRootsExample extends App {
   
-  import calclog.FormatSyntax._
+  import calclog.CalculationFormatter.syntax._
   import calclog.Implicits._
-  import calclog.ToStringFormat.Implicits._
+  import calclog.ValueFormatter.Implicits._
 
   final case class Parameters(a: Double, b: Double, c: Double)
 

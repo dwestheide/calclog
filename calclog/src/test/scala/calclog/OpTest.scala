@@ -3,7 +3,7 @@ package calclog
 import minitest.SimpleTestSuite
 import minitest.laws.Checkers
 import org.scalacheck.Prop._
-import ToStringFormat.Implicits._
+import calclog.ValueFormatter.Implicits._
 
 object OpTest extends SimpleTestSuite with Checkers {
 
@@ -48,7 +48,7 @@ object OpTest extends SimpleTestSuite with Checkers {
     })
   }
 
-  private def failedExpression[A: Format](reason: String): Calculation.Expression[A] =
+  private def failedExpression[A: ValueFormatter](reason: String): Calculation.Expression[A] =
     Calculation.Expression(Op.OneArgFunction(
       Calculation.Variable("foo", 0),
       (_: Int) => Evaluated.failed[A](reason),
