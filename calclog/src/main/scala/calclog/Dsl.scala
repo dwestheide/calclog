@@ -14,6 +14,10 @@ trait Dsl {
 
   def define[A: ValueFormatter](name: String)(e: Expression[A]): Calculation[A] = Binding(name, e)
 
+  implicit class RichLiteral[A: ValueFormatter](a: A) {
+    def literal: Calculation[A] = Expression(Op.Literal(a))
+  }
+
 }
 
 object Dsl extends Dsl
