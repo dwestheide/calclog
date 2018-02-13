@@ -2,7 +2,7 @@ package calclog
 
 import calclog.Calculation.Expression
 
-trait DefaultOperatorSyntax {
+trait DefaultOperatorSyntax { self =>
 
   implicit class AdditionOps[A](x: Calculation[A])(implicit plus: Plus[A]) {
     def +(y: Calculation[A])(implicit format: ValueFormatter[A]): Expression[A] =
@@ -25,8 +25,15 @@ trait DefaultOperatorSyntax {
   }
 
   implicit class SquareRootOps[A](x: Calculation[A])(implicit squareRoot: SquareRoot[A]) {
-    def sqrt(implicit format: ValueFormatter[A]): Expression[A] =
-      Expression(Op.OneArgFunction(x, SquareRoot[A].apply, "sqrt"))
+    def sqrt(implicit format: ValueFormatter[A]): Expression[A] = self.sqrt(x)
+  }
+
+  def sqrt[A](x: Calculation[A])(implicit squareRoot: SquareRoot[A], format: ValueFormatter[A]): Expression[A] =
+    Expression(Op.OneArgFunction(x, SquareRoot[A].apply, "sqrt"))
+
+  implicit class UnaryMinusOps[A](x: Calculation[A])(implicit unaryMinus: UnaryMinus[A]) {
+    def unary_-(implicit format: ValueFormatter[A]) = Expression(Op.Unary(x, unaryMinus.apply, "-"))
+    def negated(implicit format: ValueFormatter[A]) = Expression(Op.Unary(x, unaryMinus.apply, "-"))
   }
 
 }

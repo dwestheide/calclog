@@ -36,3 +36,10 @@ object SquareRoot {
   def safe[A](f: A => A): SquareRoot[A] = (x: A) => Evaluated(f(x))
   def apply[A](implicit sqrt: SquareRoot[A]): SquareRoot[A] = sqrt
 }
+
+trait UnaryMinus[A] extends (A => Evaluated[A])
+
+object UnaryMinus {
+  def safe[A](f: A => A): UnaryMinus[A] = a => Evaluated(f(a))
+  def apply[A](implicit unaryMinus: UnaryMinus[A]): UnaryMinus[A] = unaryMinus
+}
