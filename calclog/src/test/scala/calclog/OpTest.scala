@@ -48,6 +48,20 @@ object OpTest extends SimpleTestSuite with Checkers {
     })
   }
 
+  test("Literal evaluates to passed in value") {
+    check1((x: Int) => {
+      val l = Op.Literal(x)
+      l.evaluated ?= Evaluated.success(x)
+    })
+  }
+
+  test("Unary applies f to the argument") {
+    check3((x: Int, f: Int => Evaluated[Int], s: String) => {
+      val func = Op.Unary(Calculation.Variable("x", x), f, s)
+      func.evaluated ?= f(x)
+    })
+  }
+
   private def failedExpression[A: ValueFormatter](reason: String): Calculation.Expression[A] =
     Calculation.Expression(Op.OneArgFunction(
       Calculation.Variable("foo", 0),

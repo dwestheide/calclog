@@ -1,5 +1,6 @@
 package calclog
 
+import calclog.Calculation.Expression
 import minitest.SimpleTestSuite
 import minitest.laws.Checkers
 import org.scalacheck.Prop.AnyOperators
@@ -33,6 +34,21 @@ object EquationTest extends SimpleTestSuite with Checkers {
       val yVar = y ~ "y"
       val e = xVar + yVar * yVar
       Equation.equation(e) ?= s"x + (y * y) = ${x + y * y}"
+    })
+  }
+
+  test("Equation with simple literal ops") {
+    check1((x: Int) => {
+      val literal = Expression(Op.Literal(x))
+      Equation.equation(literal + literal) ?= s"$x + $x = ${x + x}"
+    })
+  }
+
+  test("Equation with simple unary operator") {
+    check1((x: Int) => {
+      val xVar = x ~ "x"
+      val e = Expression(Op.Unary[Int](xVar, a => Evaluated.success(-a), "-"))
+      Equation.equation(e) ?= s"-x = ${-x}"
     })
   }
 

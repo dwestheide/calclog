@@ -24,6 +24,10 @@ private[calclog] object Equation {
         val inputs = func.inputs.map(descCalc)
         if (outmost) s"${func.name}(${inputs.mkString(", ")})"
         else s"(${func.name}(${inputs.mkString(", ")}))"
+      case literal: OpDescription.Literal =>
+        literal.valueString
+      case unary: OpDescription.Unary =>
+        s"${unary.symbol}${descCalc(unary.operand)}"
     }
   }
 

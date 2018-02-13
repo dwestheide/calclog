@@ -17,6 +17,18 @@ object OpDescription {
   sealed trait Func extends OpDescription {
     def name: String
   }
+
+  sealed trait Literal extends OpDescription {
+    def valueString: String
+    final override def inputs: Seq[CalculationDescription] = Seq.empty
+  }
+
+  sealed trait Unary extends OpDescription {
+    def symbol: String
+    def operand: CalculationDescription
+    final override def inputs: Seq[CalculationDescription] = Seq(operand)
+  }
+
 }
 
 sealed trait Op[A] extends OpDescription {
@@ -53,6 +65,19 @@ object Op {
         b <- f(a)
       } yield b
     override def inputs: Seq[CalculationDescription] = Seq(x)
+  }
+
+  final case class Literal[A](value: A)(implicit valueFormatter: ValueFormatter[A]) extends OpDescription.Literal with Op[A] {
+    override def evaluated: Evaluated[A] = Evaluated.success(value)
+    override def valueString: String = valueFormatter.format(value)
+  }
+
+  final case class Unary[A](operand: Calculation[A], f: A => Evaluated[A], symbol: String)
+    extends OpDescription.Unary with Op[A] {
+    override def evaluated: Evaluated[A] = for {
+      a <- operand.extractValue
+      a2 <- f(a)
+    } yield a2
   }
 
 }
