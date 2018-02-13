@@ -1,12 +1,12 @@
 package calclog
 
-import java.time.Duration
-
 import minitest.SimpleTestSuite
 import minitest.laws.Checkers
-import org.scalacheck.Prop.{BooleanOperators, AnyOperators}
+import org.scalacheck.Prop.AnyOperators
 
-object DefaultOperatorInstancesTest extends SimpleTestSuite with Checkers with Arbitraries with DefaultOperatorInstances {
+object DefaultOperatorInstancesTest extends SimpleTestSuite with Checkers {
+
+  import Implicits._
 
   test("BigDecimal addition") {
     check2((x: BigDecimal, y: BigDecimal) =>
@@ -58,38 +58,6 @@ object DefaultOperatorInstancesTest extends SimpleTestSuite with Checkers with A
         Divide[Double, Double, Double].apply(x, y) ?= Evaluated.failed("Division by zero")
     )
   }
-
-  test("Duration addition") {
-    check2((x: Duration, y: Duration) =>
-      Plus[Duration].apply(x, y) ?= Evaluated.success(x.plus(y))
-    )
-  }
-
-  test("Duration subtraction") {
-    check2((x: Duration, y: Duration) =>
-      Minus[Duration].apply(x, y) ?= Evaluated.success(x.minus(y))
-    )
-  }
-
-  test("Duration multiplied by double") {
-    check2((x: Duration, y: Double) =>
-      Times[Duration, Double, Duration].apply(x, y) ?= Evaluated.success(x.multipliedBy(y.toLong))
-    )
-  }
-
-  test("Duration division by double") {
-    check2((x: Duration, y: Double) => (y.abs > 0.01) ==> {
-      Divide[Duration, Double, Duration].apply(x, y) ?= Evaluated.success(x.dividedBy(y.toLong))
-    })
-  }
-
-  test("Duration division by zero") {
-    check1((x: Duration) =>
-      Divide[Duration, Double, Duration].apply(x, 0) ?= Evaluated.failed("Cannot divide by zero")
-    )
-  }
-
-
 
 
 }

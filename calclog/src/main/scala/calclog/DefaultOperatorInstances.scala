@@ -1,7 +1,5 @@
 package calclog
 
-import java.time.Duration
-
 trait DefaultOperatorInstances {
 
   implicit def numericAddition[A: Numeric]: Plus[A] =
@@ -16,15 +14,10 @@ trait DefaultOperatorInstances {
   implicit def fractionalDivision[A: Fractional]: Divide[A, A, A] =
     Divide.safe(implicitly[Fractional[A]].div(_, _))
 
+  implicit def numericNegation[A: Numeric]: UnaryMinus[A] =
+    UnaryMinus.safe(implicitly[Numeric[A]].negate)
+
   implicit val doubleSqareRoot: SquareRoot[Double] =
     SquareRoot.safe(scala.math.sqrt).filterOrElse(!_.isNaN, "NaN")
-
-  implicit val durationAddition: Plus[Duration] = Plus.safe(_.plus(_))
-  implicit val durationSubtraction: Minus[Duration] = Minus.safe(_.minus(_))
-  implicit def durationTimesNumber[A](implicit numericA: Numeric[A]): Times[Duration, A, Duration] =
-    Times.safe((d, a) => d.multipliedBy(numericA.toLong(a)))
-  implicit def durationByNumberDivision[A](implicit numericA: Numeric[A]): Divide[Duration, A, Duration] =
-    Divide.safe((d, a) => d.dividedBy(numericA.toLong(a)))
-
 
 }

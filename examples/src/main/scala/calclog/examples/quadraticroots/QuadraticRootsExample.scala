@@ -22,17 +22,10 @@ object QuadraticRootsExample extends App {
     val b = parameters.b ~ "b"
     val c = parameters.c ~ "c"
 
-    val four = 4d ~ "4"
-    val two = 2d ~ "2"
-    val minusOne = -1d ~ "-1"
-
-    val bSquared = b * b <~ "b^2"
-    val fourac = four * a * c <~ "4ac"
-    val determinant = bSquared - fourac <~ "determinant"
-    val sqrtDeterminant = determinant.sqrt <~ "sqrt(determinant)"
-    val minusB = b * minusOne <~ "-b"
-    val numerator = minusB + sqrtDeterminant <~ "numerator"
-    val denominator = two * a <~ "denominator"
+    val fourac = 4d.literal * a * c <~ "4ac"
+    val determinant = b * b - fourac <~ "determinant"
+    val numerator = -b + sqrt(determinant) <~ "numerator"
+    val denominator = 2d.literal * a <~ "denominator"
     numerator / denominator <~ "root"
 
   }
