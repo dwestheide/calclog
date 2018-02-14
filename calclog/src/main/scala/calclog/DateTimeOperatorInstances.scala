@@ -11,4 +11,15 @@ trait DateTimeOperatorInstances {
   implicit val durationByLong: Divide[Duration, Long, Duration] = Divide.safe((d, a) => d.dividedBy(a))
 }
 
-object datetime extends DateTimeOperatorInstances
+object datetime extends DateTimeOperatorInstances {
+  object fractions {
+    object bigdecimal {
+      implicit val durationFractionAsBigDecimal: calclog.Divide[Duration, Duration, BigDecimal] =
+        calclog.Divide.safe((d1, d2) => BigDecimal(d1.toNanos) / BigDecimal(d2.toNanos))
+    }
+    object double {
+      implicit val durationFractionAsDouble: calclog.Divide[Duration, Duration, Double] =
+        calclog.Divide.safe((d1, d2) => d1.toNanos.toDouble / d2.toNanos)
+    }
+  }
+}

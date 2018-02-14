@@ -17,7 +17,6 @@ object QuadraticRootsExample extends App {
 //  println(root(Parameters(2, 5, 10)).run.description.format)
 
   def root(parameters: Parameters): Calculation[Double] = {
-
     val a = parameters.a ~ "a"
     val b = parameters.b ~ "b"
     val c = parameters.c ~ "c"
@@ -27,6 +26,5 @@ object QuadraticRootsExample extends App {
     val numerator = -b + sqrt(determinant) <~ "numerator"
     val denominator = 2d.literal * a <~ "denominator"
     numerator / denominator <~ "root"
-
   }
 }

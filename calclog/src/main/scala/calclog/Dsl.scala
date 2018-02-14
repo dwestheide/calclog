@@ -2,6 +2,8 @@ package calclog
 
 import calclog.Calculation.{Binding, Expression, Variable}
 
+import scala.language.implicitConversions
+
 trait Dsl {
 
   implicit class RichExpression[A](e: Expression[A]) {
