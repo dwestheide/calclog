@@ -29,7 +29,9 @@ object CalculationDescription {
           head match {
             case v @ Variable(_, _) =>
               val summary =  indent * indentLevel + s"${CalculationSummary(v.name, v.showValue).format}"
-              val newAcc = if (tail.contains(v)) acc else acc :+ summary
+              val newAcc =
+                if (tail.contains(v)) acc
+                else acc :+ summary
               iter(newAcc, indentLevel, tail)
             case b @ Binding(_, _) =>
               val summary =  indent * indentLevel + s"Calculating ${b.name}"

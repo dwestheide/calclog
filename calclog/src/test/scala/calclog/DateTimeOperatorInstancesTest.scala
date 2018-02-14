@@ -21,13 +21,7 @@ object DateTimeOperatorInstancesTest extends SimpleTestSuite with Checkers with 
       Minus[Duration].apply(x, y) ?= Evaluated.success(x.minus(y))
     )
   }
-
-  test("Duration multiplied by double") {
-    check2((x: Duration, y: Double) =>
-      Times[Duration, Double, Duration].apply(x, y) ?= Evaluated.success(x.multipliedBy(y.toLong))
-    )
-  }
-
+  
   test("Duration division by int") {
     check2((x: Duration, y: Int) => y != 0 ==> {
       Divide[Duration, Int, Duration].apply(x, y) ?= Evaluated.success(x.dividedBy(y.toLong))
