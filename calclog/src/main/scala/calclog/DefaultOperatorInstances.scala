@@ -14,6 +14,8 @@ trait DefaultOperatorInstances {
   implicit def fractionalDivision[A: Fractional]: Divide[A, A, A] =
     Divide.safe(implicitly[Fractional[A]].div(_, _))
 
+  implicit val intDivision: Divide[Int, Int, Int] = Divide.safe(_ / _)
+
   implicit def numericNegation[A: Numeric]: UnaryMinus[A] =
     UnaryMinus.safe(implicitly[Numeric[A]].negate)
 
