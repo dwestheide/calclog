@@ -20,7 +20,7 @@ lazy val examples = project.in(file("examples"))
   .settings(
     name := "calclog-examples",
     coverageEnabled := false,
-    initialCommands in console := "import calclog._, import calclog.CalculationFormatter.syntax._, " +
+    initialCommands in console := "import calclog._, calclog.CalculationFormatter.syntax._, " +
       "calclog.Implicits._, calclog.ValueFormatter.Implicits._"
   )
   .dependsOn(calclog)
