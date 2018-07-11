@@ -2,6 +2,7 @@ package calclog
 
 import calclog.Calculation.{Binding, Expression, Variable}
 
+import scala.annotation.tailrec
 import scala.collection.immutable.Seq
 
 sealed trait CalculationDescription {
@@ -10,6 +11,10 @@ sealed trait CalculationDescription {
 }
 
 final case class CalculationSummary(name: String, value: String)
+
+sealed trait CalcNode extends Product with Serializable
+final case class DescriptionNode(indentLevel: Int, description: CalculationDescription) extends CalcNode
+final case class ResultNode(result: String) extends CalcNode
 
 object CalculationSummary {
   implicit val formatCalculationSummary: CalculationFormatter[CalculationSummary] =
@@ -20,39 +25,40 @@ object CalculationDescription {
   implicit val calculationDefaultFormat: CalculationFormatter[CalculationDescription] = calculation => {
     import CalculationFormatter.syntax._
     val indent = "  "
+
+    @tailrec
     def iter(acc: Seq[String],
-             indentLevel: Int,
-             calculations: Seq[CalculationDescription]): Seq[String] = {
+             calculations: Seq[CalcNode]): Seq[String] = {
       calculations match {
         case Seq() => acc
         case head +: tail =>
           head match {
-            case v @ Variable(_, _) =>
+            case DescriptionNode(indentLevel, v @ Variable(_, _)) =>
               val summary =  indent * indentLevel + s"${CalculationSummary(v.name, v.showValue).format}"
               val newAcc =
-                if (tail.contains(v)) acc
+                if (tail.exists { case DescriptionNode(_, d) => d == v; case _ => false }) acc
                 else acc :+ summary
-              iter(newAcc, indentLevel, tail)
-            case b @ Binding(_, _) =>
-              val summary =  indent * indentLevel + s"Calculating ${b.name}"
-              val newAcc = if (tail.contains(b)) acc else acc :+ summary
+              iter(newAcc, tail)
+            case DescriptionNode(indentLevel, b @ Binding(_, _)) =>
+              val summary = indent * indentLevel + s"Calculating ${b.name}"
               val result = indent * indentLevel + s"Got ${b.name}: ${Equation.equation(b.expression)}"
-              val withInputs = iter(newAcc, indentLevel + 1, b.inputs) :+ result
-              iter(withInputs, indentLevel, tail)
-            case e @ Expression(_) =>
+              iter(acc :+ summary, b.inputs.map(desc => DescriptionNode(indentLevel + 1, desc)) ++
+                Seq(ResultNode(result)) ++ tail)
+            case DescriptionNode(indentLevel, e @ Expression(_)) =>
               if (indentLevel > 0)
-                iter(acc, indentLevel, e.inputs ++ tail)
+                iter(acc, e.inputs.map(desc => DescriptionNode(indentLevel, desc)) ++ tail)
               else {
                 val summary = indent * indentLevel + s"Calculating..."
-                val newAcc = acc :+ summary
                 val result = indent * indentLevel + s"Got: ${Equation.equation(e)}"
-                val withInputs = iter(newAcc, indentLevel + 1, e.inputs) :+ result
-                iter(withInputs, indentLevel, tail)
+                iter(acc :+ summary, e.inputs.map(desc => DescriptionNode(indentLevel + 1, desc)) ++
+                  Seq(ResultNode(result)) ++ tail)
               }
+            case ResultNode(result) =>
+              iter(acc :+ result, tail)
           }
       }
     }
-    iter(Seq.empty, 0, Seq(calculation)).mkString("\n")
+    iter(Seq.empty, Seq(calculation).map(DescriptionNode(0, _))).mkString("\n")
   }
 
 }
