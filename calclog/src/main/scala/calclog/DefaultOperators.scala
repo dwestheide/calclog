@@ -8,7 +8,7 @@ import scala.annotation.implicitNotFound
   "If A is a custom type, you will probably need to implement your own\n" +
   "instance of the Plus typeclass for it."
 )
-trait Plus[A] extends (A, A) => Evaluated[A]
+trait Plus[A] extends ((A, A) => Evaluated[A])
 
 object Plus {
   def safe[A](f: (A, A) => A): Plus[A] = (x: A, y: A) => Evaluated(f(x, y))
@@ -21,7 +21,7 @@ object Plus {
   "If A is a custom type, you will probably need to implement your own\n" +
   "instance of the Minus typeclass for it."
 )
-trait Minus[A] extends (A, A) => Evaluated[A]
+trait Minus[A] extends ((A, A) => Evaluated[A])
 
 object Minus {
   def safe[A](f: (A, A) => A): Minus[A] = (x: A, y: A) => Evaluated(f(x, y))
@@ -34,7 +34,7 @@ object Minus {
   "If A or B is a custom type, you will probably need to implement your own\n" +
   "instance of the Times typeclass."
 )
-trait Times[A, B, C] extends (A, B) => Evaluated[C]
+trait Times[A, B, C] extends ((A, B) => Evaluated[C])
 
 object Times {
   def safe[A, B, C](f: (A, B) => C): Times[A, B, C] = (x: A, y: B) => Evaluated(f(x, y))
@@ -47,7 +47,7 @@ object Times {
   "If A or B is a custom type, you will probably need to implement your own\n" +
   "instance of the Divide typeclass."
 )
-trait Divide[A, B, C] extends (A, B) => Evaluated[C]
+trait Divide[A, B, C] extends ((A, B) => Evaluated[C])
 
 object Divide {
   def safe[A, B, C](f: (A, B) => C): Divide[A, B, C] = (x: A, y: B) => Evaluated(f(x, y))
@@ -60,7 +60,7 @@ object Divide {
   "If A is a custom type, you will probably need to implement your own\n" +
   "instance of the SquareRoot typeclass for it."
 )
-trait SquareRoot[A] extends A => Evaluated[A] { self =>
+trait SquareRoot[A] extends (A => Evaluated[A]) { self =>
   def filterOrElse(f: A => Boolean, error: String): SquareRoot[A] = a => self(a).filterOrElse(f, error)
 }
 
@@ -75,7 +75,7 @@ object SquareRoot {
   "If A is a custom type, you will probably need to implement your own\n" +
   "instance of the UnaryMinus typeclass for it."
 )
-trait UnaryMinus[A] extends A => Evaluated[A]
+trait UnaryMinus[A] extends (A => Evaluated[A])
 
 object UnaryMinus {
   def safe[A](f: A => A): UnaryMinus[A] = a => Evaluated(f(a))

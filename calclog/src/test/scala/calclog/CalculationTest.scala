@@ -9,7 +9,7 @@ object CalculationTest extends SimpleTestSuite with Checkers {
 
   import Implicits._
   import ValueFormatter.Implicits._
-  import CalculationFormatter.syntax._
+  import CalculationDescriptionFormatter.Implicits.default
 
   test("extractValue of Variable") {
     check2((name: String, value: Int) =>
