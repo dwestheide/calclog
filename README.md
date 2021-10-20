@@ -1,8 +1,1 @@
-## sbt project compiled with Scala 3
-
-### Usage
-
-This is a normal sbt project. You can compile code with `sbt compile`, run it with `sbt run`, and `sbt console` will start a Scala 3 REPL.
-
-For more information on the sbt-dotty plugin, see the
-[dotty-example-project](https://github.com/lampepfl/dotty-example-project/blob/master/README.md).
+Typesafe, loggable, and DRY calculations for the less monadically inclined. This library is still in a very early stage, and there are no binary releases yet. Nevertheless, please play around with it – I would be happy to get your feedback or contributions.
