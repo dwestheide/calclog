@@ -22,18 +22,18 @@ object CalculationDescriptionFormatter:
           case Seq() => acc
           case head +: tail =>
             head match
-              case CalcNode.DescriptionNode(indentLevel, v @ Calculation.Variable(_, _)) =>
+              case CalcNode.DescriptionNode(indentLevel, v @ Calculation.Variable(_, _, _)) =>
                 val summary =  indent * indentLevel + s"${CalculationSummary(v.name, v.showValue).formatValue}"
                 val newAcc =
                   if tail.exists { case CalcNode.DescriptionNode(_, d) => d == v; case _ => false } then acc
                   else acc :+ summary
                 iter(newAcc, tail)
-              case CalcNode.DescriptionNode(indentLevel, b @ Calculation.Binding(_, _)) =>
+              case CalcNode.DescriptionNode(indentLevel, b @ Calculation.Binding(_, _, _)) =>
                 val summary = indent * indentLevel + s"Calculating ${b.name}"
                 val result = indent * indentLevel + s"Got ${b.name}: ${equation(b.expression)}"
                 iter(acc :+ summary, b.inputs.map(desc => CalcNode.DescriptionNode(indentLevel + 1, desc)) ++
                   Seq(CalcNode.ResultNode(result)) ++ tail)
-              case CalcNode.DescriptionNode(indentLevel, e @ Calculation.Expression(_)) =>
+              case CalcNode.DescriptionNode(indentLevel, e @ Calculation.Expression(_, _)) =>
                 if indentLevel > 0 then
                   iter(acc, e.inputs.map(desc => CalcNode.DescriptionNode(indentLevel, desc)) ++ tail)
                 else
@@ -48,25 +48,25 @@ object CalculationDescriptionFormatter:
 
   val flat: CalculationDescriptionFormatter = calculation =>
     val heading = calculation match
-      case Calculation.Binding(name, _) =>
+      case Calculation.Binding(name, _, _) =>
         s"Calculating $name..."
-      case Calculation.Expression(_) =>
+      case Calculation.Expression(_, _) =>
         "Calculating expression..."
-      case Calculation.Variable(name, _) =>
+      case Calculation.Variable(name, _, _) =>
         s"Defining variable $name"
       
       val result = calculation match
-      case b @ Calculation.Binding(name, _) =>
+      case b @ Calculation.Binding(name, _, _) =>
         CalculationSummary(name, b.showValue).formatValue
-      case e @ Calculation.Expression(_) =>
+      case e @ Calculation.Expression(_, _) =>
         s"Expression result = ${e.showValue}"
-      case v @ Calculation.Variable(name, _) =>
+      case v @ Calculation.Variable(name, _, _) =>
         CalculationSummary(name, v.showValue).formatValue
 
       @scala.annotation.tailrec
       def extractVariables(acc: List[CalculationSummary], calculations: List[CalculationDescription]): List[CalculationSummary] =
         calculations match
-          case (v @ Calculation.Variable(_, _)) :: rest =>
+          case (v @ Calculation.Variable(_, _, _)) :: rest =>
             extractVariables(CalculationSummary(v.name, v.showValue) :: acc, rest)
           case other :: rest =>
             extractVariables(acc, other.inputs.toList ::: rest)
@@ -75,7 +75,7 @@ object CalculationDescriptionFormatter:
       @scala.annotation.tailrec
       def extractBindings(acc: List[String], calculations: List[CalculationDescription]): List[String] =
         calculations match
-          case Calculation.Binding(name, expression) :: rest =>
+          case Calculation.Binding(name, expression, _) :: rest =>
             val nameIndent = " " * name.size
             val equations = List(
               "",

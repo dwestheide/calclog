@@ -6,27 +6,28 @@ sealed trait CalculationDescription:
   final def format(using formatter: CalculationDescriptionFormatter): String =
     formatter.format(this)
 
-sealed abstract class Calculation[A: ValueFormatter] extends CalculationDescription with Product with Serializable:
-  def extractValue: Evaluated[A]
-  final def showValue: String = extractValue.fold(identity, _.formatValue)
-  final def run: DescribedCalculation[A] = DescribedCalculation(extractValue, this)
+enum Calculation[A] extends CalculationDescription:
+  case Variable(name: String, value: A, valueFormatter: ValueFormatter[A])
+  case Expression(op: Op[A], valueFormatter: ValueFormatter[A])
+  case Binding(name: String, expression: Expression[A], valueFormatter: ValueFormatter[A])
 
-end Calculation
-
-object Calculation:
-  final case class Variable[A: ValueFormatter](name: String, value: A) extends Calculation[A]:
-    override val extractValue: Evaluated[A] = Evaluated.success(value)
-    override val inputs: Seq[CalculationDescription] = Seq.empty
-
-  final case class Expression[A: ValueFormatter](op: Op[A]) extends Calculation[A]:
-    override val extractValue: Evaluated[A] = op.evaluated
-    override val inputs: Seq[CalculationDescription] = op.description.inputs
-
-  final case class Binding[A: ValueFormatter](name: String, expression: Expression[A]) extends Calculation[A]:
-
-    override val extractValue: Evaluated[A] = expression
+  def valueFormatter: ValueFormatter[A]
+  
+  def extractValue: Evaluated[A] = this match
+    case Variable(_, value, _) => Evaluated.success(value)
+    case Expression(op, _) => op.evaluated
+    case Binding(name, expression, _) => expression
       .extractValue
       .left
       .map(reason => s"Error in expression bound to name '$name': $reason")
+  
+  def inputs: Seq[CalculationDescription] = this match
+    case Variable(_, _, _) => Seq.empty
+    case Expression(op, _) => op.description.inputs
+    case Binding(_, expression, _) => expression.inputs
 
-    override val inputs: Seq[CalculationDescription] = expression.inputs
+  final def showValue: String = extractValue.fold(identity, valueFormatter.formatValue)
+  
+  final def run: DescribedCalculation[A] = DescribedCalculation(extractValue, this)
+
+end Calculation

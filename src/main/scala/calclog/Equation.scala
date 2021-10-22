@@ -12,9 +12,9 @@ private[calclog] def equationWithNames[A](expression: Calculation.Expression[A])
   
 private[calclog] def describeOp[A](op: OpDescription, outmost: Boolean, useNames: Boolean = true): String =
   def descCalc(calc: CalculationDescription): String = calc match
-      case v @ Calculation.Variable(name, _) => if (useNames) name else v.showValue
-      case b @ Calculation.Binding(name, expression)  => if (useNames) name else b.showValue
-      case Calculation.Expression(op1)   => describeOp(op1.description, outmost = false, useNames)
+      case v @ Calculation.Variable(name, _, _) => if (useNames) name else v.showValue
+      case b @ Calculation.Binding(name, expression, _)  => if (useNames) name else b.showValue
+      case Calculation.Expression(op1, _)   => describeOp(op1.description, outmost = false, useNames)
   
   op match
     case infix: OpDescription.Infix =>

@@ -9,31 +9,31 @@ import calclog.CalculationTest
 object CalculationTest extends SimpleTestSuite with Checkers:
 
   import Defaults.{given, *}
-  import ValueFormatter.given
+  import ValueFormatter.toStringValueFormatter
   import CalculationDescriptionFormatter.given
 
   test("extractValue of Variable") {
     check2((name: String, value: Int) =>
       (value > 0 && value < Int.MaxValue / 2) ==> {
-        Variable(name, value).extractValue ?= Evaluated.success(value)
+        Variable(name, value, toStringValueFormatter).extractValue ?= Evaluated.success(value)
     })
   }
 
   test("extractValue of Expression") {
     check2((name: String, value: Int) =>
       (value > 0 && value < Int.MaxValue / 2) ==> {
-        val v  = Variable(name, value)
+        val v  = Variable(name, value, toStringValueFormatter)
         val op = Op.OneArgFunction[Int, Int](v, _ => Evaluated.success(value), "foo")
-        Expression(op).extractValue ?= Evaluated.success(value)
+        Expression(op, toStringValueFormatter).extractValue ?= Evaluated.success(value)
     })
   }
 
   test("extractValue of Binding") {
     check3((varName: String, bindingName: String, value: Int) =>
       (value > 0 && value < Int.MaxValue / 2) ==> {
-        val v  = Variable(varName, value)
+        val v  = Variable(varName, value, toStringValueFormatter)
         val op = Op.OneArgFunction[Int, Int](v, _ => Evaluated.success(value), "foo")
-        val b  = Binding(bindingName, Expression(op))
+        val b  = Binding(bindingName, Expression(op, toStringValueFormatter), toStringValueFormatter)
         b.extractValue ?= Evaluated.success(value)
     })
   }

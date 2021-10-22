@@ -39,7 +39,7 @@ object EquationTest extends SimpleTestSuite with Checkers:
 
   test("Equation with simple literal ops") {
     check1((x: Int) => {
-      val literal = Expression(Op.Literal(x, toStringValueFormatter))
+      val literal = Expression(Op.Literal(x, toStringValueFormatter), toStringValueFormatter)
       equation(literal + literal) ?= s"$x + $x = ${x + x}"
     })
   }
@@ -47,7 +47,7 @@ object EquationTest extends SimpleTestSuite with Checkers:
   test("Equation with simple unary operator") {
     check1((x: Int) => {
       val xVar = x ~ "x"
-      val e = new Expression(Op.Unary[Int](xVar, a => Evaluated.success(-a), "-"))
+      val e = new Expression(Op.Unary[Int](xVar, a => Evaluated.success(-a), "-"), toStringValueFormatter)
       equation(e) ?= s"-x = ${-x}"
     })
   }
